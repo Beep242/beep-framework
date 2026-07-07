@@ -5,9 +5,9 @@ function PANEL:Init()
     self:BUi():ClearPaint():Background(Color(28,28,30),6)
     self:SetVisible(false)
     self:DockPadding(0,5,0,5)
-    self.Buttons = {}
+    self.Buttons  = {}
     self.SubMenus = {}
-    self.Created = true
+    self.Created  = true
 
     self.Scroll = BUi.Create("BUi.Scroll", self)
     self.Scroll:Dock(FILL)
@@ -66,11 +66,13 @@ function PANEL:AddSubMenu(text)
         self.ActiveSubMenu = sub
     end
 
+    -- Submenu closes itself when neither it nor its trigger is hovered
     sub.Think = function(s)
-        local hovered = s:IsHovered()
-        local parentBtnHovered = IsValid(btn) and btn:IsHovered()
+        if not s:IsVisible() then return end
+        local hovered       = s:IsHovered()
+        local btnHovered    = IsValid(btn) and btn:IsHovered()
         local parentHovered = IsValid(s.ParentMenu) and s.ParentMenu:IsHovered()
-        if hovered or parentBtnHovered or parentHovered then
+        if hovered or btnHovered or parentHovered then
             s.LastHover = SysTime()
         elseif SysTime() - (s.LastHover or 0) > 0.35 then
             s:Close()
@@ -104,9 +106,9 @@ function PANEL:Close()
     for _, btn in ipairs(self.Buttons) do
         if IsValid(btn) then btn:Remove() end
     end
-    self.Buttons = {}
+    self.Buttons  = {}
     self.SubMenus = {}
-    self.Created = false
+    self.Created  = false
 end
 
 function PANEL:CloseAll()
@@ -114,6 +116,42 @@ function PANEL:CloseAll()
     if self.ParentMenu and IsValid(self.ParentMenu) then
         self.ParentMenu:CloseAll()
     end
+end
+
+-- Close when the user clicks outside the menu (focus lost)
+function PANEL:OnFocusChanged(gained)
+    if not gained then
+        -- Small delay so a button DoClick fires before we close
+        timer.Simple(0, function()
+            if IsValid(self) then self:CloseAll() end
+        end)
+    end
+end
+
+-- Think: only used by top-level menus to self-close when the
+-- panel that opened them is removed (owner went away mid-session)
+function PANEL:Think()
+    if not self:IsVisible() then return end
+
+    if self.ParentMenu and IsValid(self.ParentMenu) then
+        self.ParentMenu:CloseAll()
+    end
+    
+    if self._owner then
+        if not IsValid(self._owner) or not self._owner:IsVisible() then
+            self:CloseAll()
+            return
+        end
+    end
+end
+
+-- Optionally call this after Open() to register who opened the menu,
+-- so the menu auto-closes if that panel is rebuilt/removed.
+--   local m = vgui.Create("BUi.DMenu")
+--   m:SetOwner(someButton)
+--   m:Open()
+function PANEL:SetOwner(pnl)
+    self._owner = pnl
 end
 
 vgui.Register("BUi.DMenu", PANEL, "DPanel")
