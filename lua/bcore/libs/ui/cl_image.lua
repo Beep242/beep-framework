@@ -56,7 +56,7 @@ local grabbingMaterials = {}
 local getImgur = BUi.GetImgur
 
 
-getImgur("https://invisibalfan-ui.github.io/bui_images/images/9xg5q8d.png", function(mat)
+getImgur("https://beep242.github.io/bui_images/9xg5q8d.png", function(mat)
     progressMat = mat
  end)
 
