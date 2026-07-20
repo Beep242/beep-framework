@@ -91,8 +91,3 @@ function masks.End(kind)
     surface.SetMaterial(masks.dest.mat)
     surface.DrawTexturedRect(0, 0, ScrW(), ScrH())
 end
-
-
-if not melon then return masks end
-
-

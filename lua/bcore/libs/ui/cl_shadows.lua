@@ -1,6 +1,6 @@
 //Credits to Garryspins
 //This file is part of the BUi library, which provides various UI components and utilities.
-//The code below handles the drawing of images from Imgur, including progress indicators and masks.
+//The code below handles rendering soft drop-shadows behind panels via a blurred render target.
 
 local shadows = {}
 BUi.shadows = shadows

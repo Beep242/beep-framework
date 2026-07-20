@@ -1,25 +1,25 @@
-//Vectivus made this 
-function BCORE:ParseKey( k )
-    local a = string.lower( k )
-    a = string.Replace( a, ":", "_" )
-    return a
+//Vectivus made this
+function BCORE:ParseKey( rawKey )
+    local safeKey = string.lower( rawKey )
+    safeKey = string.Replace( safeKey, ":", "_" )
+    return safeKey
 end
 
-function BCORE:SaveData( sid, name, data, bool ) // sid, filename, data, istable(bool)
-    local a = self:ParseKey( sid )
+function BCORE:SaveData( storageID, fileName, data, encodeAsJSON )
+    local safeID = self:ParseKey( storageID )
     file.CreateDir( "BCORE" )
-    file.CreateDir( "BCORE/" .. a )
-    local path = ( "BCORE/" .. a .. "/" )
-    path = ( path .. name .. ".dat" )
-    file.Write( path, ( bool and util.TableToJSON( data, true ) or data ) )
+    file.CreateDir( "BCORE/" .. safeID )
+    local path = ( "BCORE/" .. safeID .. "/" )
+    path = ( path .. fileName .. ".dat" )
+    file.Write( path, ( encodeAsJSON and util.TableToJSON( data, true ) or data ) )
 end
 
 
 util.AddNetworkString( "BCORE.Chat" )
-function BCORE:AddText( p, txt )
-    if !IsValid( p ) then return end
-    if !txt then return end
+function BCORE:AddText( ply, message )
+    if !IsValid( ply ) then return end
+    if !message then return end
     net.Start( "BCORE.Chat" )
-        net.WriteString( txt )
-    net.Send( p )
+        net.WriteString( message )
+    net.Send( ply )
 end
