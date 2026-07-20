@@ -62,16 +62,6 @@ end
 
 BCORE:LoadAddon("bcore", {"sh_pon.lua", "sh_netstream2.lua"}, "[BCORE]")
 
-
-
-
-
-
-local allowed = {
-    ["76561198882971288"] = true, -- Me
-    ["76561199198141921"] = true,
-}
-
-hook.Add("CheckPassword", "access_whitelist", function(steamID64)
-    return allowed[steamID64] and true or false, allowed[steamID64] and nil or "[NOT WHITELISTED]"
-end)
+-- Server access control now lives in bcore/libs/config (BCORE.Config's "bcore" namespace:
+-- WhitelistEnabled / WhitelistedSteamIDs), editable in-game via the config panel instead of
+-- being hardcoded here. See lua/bcore/libs/config/sh_whitelist.lua.
