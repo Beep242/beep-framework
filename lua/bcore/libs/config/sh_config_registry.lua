@@ -1,7 +1,7 @@
 BCORE.Config = BCORE.Config or {}
-BCORE.Config.Definitions = BCORE.Config.Definitions or {} -- [addonId][key] = def
-BCORE.Config.Order = BCORE.Config.Order or {} -- [addonId] = { key1, key2, ... } (registration order)
-BCORE.Config.Values = BCORE.Config.Values or {} -- SERVER: live authoritative values. CLIENT: last-synced cache.
+BCORE.Config.Definitions = BCORE.Config.Definitions or {}
+BCORE.Config.Order = BCORE.Config.Order or {} 
+BCORE.Config.Values = BCORE.Config.Values or {}
 
 local function IsColorValue(v)
     return istable(v) and v.r ~= nil and v.g ~= nil and v.b ~= nil and v.a ~= nil
@@ -82,8 +82,6 @@ function BCORE:RegisterConfig(addonId, key, def)
 
     BCORE.Config.Definitions[addonId][key] = def
 
-    -- Seed with the default only if nothing has claimed this slot yet (a persisted load or an
-    -- early sync should never be clobbered by a later RegisterConfig call for the same key).
     if BCORE.Config.Values[addonId][key] == nil then
         BCORE.Config.Values[addonId][key] = CopyConfigValue(def.default)
     end
@@ -111,8 +109,6 @@ function BCORE:GetConfigAddonIds()
     return ids
 end
 
--- SERVER: reads the live authoritative value. CLIENT: reads the last-synced cache, falling
--- back to the registered default before the first full sync has arrived.
 function BCORE:GetConfig(addonId, key, fallback)
     local addon = BCORE.Config.Values[addonId]
     local value = addon and addon[key]

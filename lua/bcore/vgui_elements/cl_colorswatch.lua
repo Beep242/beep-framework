@@ -57,7 +57,9 @@ function PANEL:TogglePicker()
     mixer:SetWangs(true)
     mixer:SetColor(self.Colour)
     mixer.ValueChanged = function(_, col)
-        self.Colour = col
+        if IsValid(self) then
+            self.Colour = col
+        end
     end
 
     local done = BUi.Create("DButton", picker)
@@ -75,9 +77,15 @@ function PANEL:TogglePicker()
     end
 
     picker.OnRemove = function()
-        self.Picker = nil
-        if IsValid(self) and self.OnValueConfirmed then
-            self:OnValueConfirmed(self.Colour)
+        -- self is already invalid here when this fires as a *result* of self's own
+        -- OnRemove (below) removing the picker during the swatch's own removal cascade -
+        -- GMod marks a panel invalid before running its OnRemove, so both writes below
+        -- need their own guard, not just the OnValueConfirmed call.
+        if IsValid(self) then
+            self.Picker = nil
+            if self.OnValueConfirmed then
+                self:OnValueConfirmed(self.Colour)
+            end
         end
     end
 

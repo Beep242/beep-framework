@@ -742,8 +742,19 @@ end
 
 classes.ReadyTextbox = function(pnl)
 	pnl:SetPaintBackground(false)
-	pnl:SetAppendOverwrite("PaintOver")
-		:SetTransitionFunc(function(s) return s:IsEditing() end)
+	-- Was pnl:SetAppendOverwrite("PaintOver") here - classes.On redirects EVERY future
+	-- :On(name, fn) call on this panel to whatever AppendOverwrite is set to, silently
+	-- ignoring the name the caller actually asked for (see classes.On above:
+	-- `name = pnl.AppendOverwrite || name`). Any styling call made after ReadyTextbox that
+	-- attaches via :On("Paint", ...) - most importantly :Background(...), which every text
+	-- entry in this codebase calls right after ReadyTextbox - got silently rerouted onto
+	-- PaintOver instead of Paint. PaintOver runs LAST, after the native DTextEntry's own
+	-- text/cursor rendering, so the "background" box painted directly on top of the typed
+	-- text and blinking cursor, hiding both completely - the text entry still accepted
+	-- clicks and keystrokes underneath, it just never visibly showed it, which is
+	-- indistinguishable from "can't type into it at all". SetAppendOverwrite has no other
+	-- caller anywhere in this file, so removing it here is safe everywhere else.
+	pnl:SetTransitionFunc(function(s) return s:IsEditing() end)
 end
 
 

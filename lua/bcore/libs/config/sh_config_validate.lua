@@ -51,6 +51,21 @@ function BCORE:ValidateConfigValue(def, value)
         end
         return value
 
+    -- Real, reproduced bug: this type was never actually handled here at all - it fell through
+    -- to the final "unsupported config type" rejection at the bottom of this function. For a
+    -- scalar "code" entry that's harmless (SetConfig's own acceptsEmpty check doesn't cover it,
+    -- so the whole save is rejected with a visible chat error) - but for a "code" FIELD INSIDE A
+    -- RECORD (Suits' OnHitCode, SuitAbilities' Action), the records branch below silently
+    -- swallows the nil by falling back to `field.default` (empty string) instead of erroring,
+    -- meaning every OnHitCode/Action script an admin wrote was SILENTLY DISCARDED and saved as
+    -- blank on every single edit - "I try to save settings and they go unchanged" for anyone
+    -- editing a suit/ability's own code field. A code snippet is just free-form text from this
+    -- validator's point of view (CompileString/CompileSuitCode do the real syntax checking at
+    -- USE time, not here), so it's validated exactly like "string".
+    elseif def.type == "code" then
+        if type(value) ~= "string" then return nil, "expected text" end
+        return value
+
     elseif def.type == "color" then
         if not IsColorValue(value) then return nil, "expected a color" end
         return ReviveColor(value)

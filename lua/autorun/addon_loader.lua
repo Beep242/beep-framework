@@ -1,6 +1,5 @@
 BCORE = BCORE or {}
 
--- Prints one "[PREFIX][SH] -> path/to/file.lua"-style line as each file loads.
 local function LogFileLoad(prefix, filePrefix, filePath, color)
     local label = {
         sh_ = "[SH]",
@@ -10,8 +9,7 @@ local function LogFileLoad(prefix, filePrefix, filePath, color)
     MsgC(color, prefix .. (label[filePrefix] or "[UNK]") .. " -> ", Color(255, 255, 255, 200), filePath, "\n")
 end
 
--- Includes one file according to its sh_/sv_/cl_ filename prefix: sh_ on both realms,
--- sv_ server-only, cl_ sent to (and only included on) the client.
+
 local function LoadFileByPrefix(filePath, fileName, prefix)
     local loadAction = string.StartWith(fileName, "sh_") and function()
         LogFileLoad(prefix, "sh_", filePath, Color(0, 255, 4, 200))
@@ -28,11 +26,6 @@ local function LoadFileByPrefix(filePath, fileName, prefix)
     if loadAction then loadAction() end
 end
 
--- Recursively walks `folder`, loading every sh_/sv_/cl_-prefixed file it finds. Files listed
--- in `priorityFiles` load first (checked at every folder depth, not just the top level - see
--- the call site below for why that matters), then everything else in each folder loads in
--- alphabetical order before recursing into subfolders. `loadedFiles` dedupes so a
--- priority-loaded file is never included a second time by the normal pass.
 local function LoadFilesInFolder(folder, priorityFiles, loadedFiles, prefix)
     loadedFiles = loadedFiles or {}
     prefix = prefix or "[BCORE]"
@@ -68,17 +61,7 @@ function BCORE:LoadAddon(folder, priorityFiles, prefix)
     MsgC(Color(30, 0, 255, 200), prefix .. " Loaded \n \n")
 end
 
--- sh_config_registry.lua has to load before sh_config_admin.lua/sh_whitelist.lua (both of
--- which call BCORE:RegisterConfig at their own file scope, immediately, to register their
--- own settings) - but alphabetically "sh_config_admin.lua" < "sh_config_registry.lua" within
--- their shared folder, so without this priority entry the registry loses that race and
--- everything call BCORE:RegisterConfig before it exists, throwing an uncaught error that
--- aborts the rest of this whole script (including the networking/saving/ui folders below it).
--- This priority list is checked at every folder depth during the walk (that's how sh_pon.lua/
--- sh_netstream2.lua below already work despite living in bcore/libs/networking/, not bcore/
--- itself), so this one extra entry is enough regardless of which folder it actually lives in.
+
 BCORE:LoadAddon("bcore", {"sh_pon.lua", "sh_netstream2.lua", "sh_config_registry.lua"}, "[BCORE]")
 
--- Server access control now lives in bcore/libs/config (BCORE.Config's "bcore" namespace:
--- WhitelistEnabled / WhitelistedSteamIDs), editable in-game via the config panel instead of
--- being hardcoded here. See lua/bcore/libs/config/sh_whitelist.lua.
+

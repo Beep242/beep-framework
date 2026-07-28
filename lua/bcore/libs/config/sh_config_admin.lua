@@ -1,7 +1,3 @@
--- Single shared admin gate for the config system, replacing the ad hoc per-addon
--- "Admins" usergroup checks scattered around this codebase (some of which pointed at the
--- wrong addon's table entirely). Every addon's config edits go through this one check.
-
 BCORE:RegisterConfig("bcore", "AdminGroups", {
     label = "Config Admin Groups",
     category = "Access Control",
