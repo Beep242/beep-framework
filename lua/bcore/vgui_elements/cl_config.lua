@@ -101,7 +101,7 @@ end
 -- frame, the socket menu, this panel's own header/nav), including the identical red hover glow -
 -- not a bespoke bare "X" glyph, which was the whole reason this needed a second pass.
 local function StyleIconButton(btn, iconURL)
-    iconURL = iconURL or "https://invisibalfan-ui.github.io/bui_images/images/0cjxwbc.png"
+    iconURL = iconURL or "https://beep242.github.io/bui_images/images/0cjxwbc.png"
     btn:BUi():ClearPaint():Background(Color(56, 56, 64, 200), 5):FadeIn(0.3):On("Paint", function(s, w, h)
         draw.RoundedBox(5, 1, 1, w - 2, h - 2, COL_ACCENT)
         BUi.DrawImgur(0, 0, w, h, iconURL, color_white)
@@ -931,7 +931,7 @@ function BCORE:OpenConfigMenu()
     closeBtn:SetText("")
     closeBtn:BUi():ClearPaint():Background(Color(56, 56, 56, 200), 5):FadeIn(0.5):On("Paint", function(s, w, h)
         draw.RoundedBox(5, 1, 1, w - 2, h - 2, COL_ACCENT)
-        BUi.DrawImgur(0, 0, w, h, "https://invisibalfan-ui.github.io/bui_images/images/0cjxwbc.png", color_white)
+        BUi.DrawImgur(0, 0, w, h, "https://beep242.github.io/bui_images/images/0cjxwbc.png", color_white)
     end):FadeHover(Color(100, 0, 0, 90), 6, 8)
     closeBtn.DoClick = function()
         if IsValid(frame) then frame:Remove() end
