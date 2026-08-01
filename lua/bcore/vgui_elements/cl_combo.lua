@@ -21,7 +21,7 @@ function PANEL:Init()
         -- anywhere in this codebase shares this one icon slot, so the broken checker square
         -- showed up on all of them at once. Fixed to the same real, valid placeholder URL used
         -- everywhere else in this codebase.
-        BUi.DrawImgur(h * 0.15, h * 0.15, h * 0.7, h * 0.7, "https://beep242.github.io/bui_images/images/mkp8lur.png", color_white)
+        BUi.DrawImgur(h * 0.15, h * 0.15, h * 0.7, h * 0.7, "https://Beep242.github.io/bui_images/images/gmod/mkp8lur.png", color_white)
     end)
 
     self.Input = BUi.Create("DTextEntry", self)
